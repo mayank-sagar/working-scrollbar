@@ -1,0 +1,22 @@
+.wrk-scroll-container div,div.wrk-scroll-container {
+    box-sizing: border-box;
+}
+
+.wrk-scroll-container {
+    background-color:#8395a7;
+    position: relative;
+}
+
+.wrk-innner-thumb {
+    background-color:#c8d6e5;
+    width:60%;
+    margin-left:20%;
+    border-radius: 15px;
+    position: absolute;
+}
+
+.wrk-scroll-wrapper {
+    position: absolute;
+    right:0px;
+    top:0px;
+}
