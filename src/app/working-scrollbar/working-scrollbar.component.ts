@@ -6,7 +6,7 @@ import { Component, OnInit, Input, AfterViewInit,HostListener, AfterViewChecked 
   styleUrls: ['./working-scrollbar.component.css']
 })
 export class WorkingScrollbarComponent implements OnInit {
-  containerWidth = '15px';
+  containerWidth = '20px';
   containerHeight;
   thumbHeight;
   
@@ -14,8 +14,11 @@ export class WorkingScrollbarComponent implements OnInit {
   isMouseIn:boolean = false;
 
   previousY = -1;
+  previousDiff = 0;
   currentY;
   thumbTop:string = '0px';
+  private prevThumbTop:number = 0;
+
   constructor() {}
 
   ngOnInit() {
@@ -50,31 +53,49 @@ export class WorkingScrollbarComponent implements OnInit {
 
   onMouseDown(event) {
     console.log(event);
-    this.isMouseIn = this.isMouseDown = true;
+    this.isMouseDown = true;
     this.previousY = event.pageY;
+    this.previousDiff = 0;
   }
 
   onMouseUp(event) {
     console.log(event);
-    this.isMouseIn = this.isMouseDown = false;
+    this.isMouseDown = false;
   }
 
   onMouseMove(event) {
-    if(this.isMouseDown ) {
-    this.currentY = event.pageY;
-    let diff = this.currentY > this.previousY?3:-3;
-    this.thumbTop = this.convertToPx(this.convertPxToInt(this.thumbTop)+diff)
-    console.log(this.thumbTop);
+    if(this.isMouseDown) {
+        this.currentY = event.pageY;
+        let currentDiff = (this.currentY - this.previousY) ; 
+        let thumbDistance = null;
+        if ( (thumbDistance = this.computerThumbTop(currentDiff)) != null && 
+          ((this.convertPxToInt(thumbDistance) + 
+          this.convertPxToInt(this.thumbHeight)) 
+          <= this.convertPxToInt(this.containerHeight)) && 
+          this.convertPxToInt(thumbDistance)  >= 0 )
+          
+      {
+      
+      
+        this.thumbTop =  this.computerThumbTop(currentDiff);
+        this.previousDiff = currentDiff ;
+       // document.documentElement.scrollTo(0,document.documentElement.clientHeight+this.convertPxToInt(this.thumbTop))
+        //console.log('client height',document.documentElement.clientHeight)
+      }
+    }
   }
+
+  computerThumbTop(currentDiff) {
+    return this.convertToPx(
+      this.convertPxToInt(this.thumbTop) + 
+      (currentDiff  - this.previousDiff))
   }
 
   onMouseIn(event) {
-    this.isMouseIn = true;
-    this.previousY = event.pageY;
   }
 
   onMouseOut(event) {
-    this.isMouseDown = false;
+    this.isMouseDown=false;
   }
 
   @HostListener('window:scroll') onScroll(event) {
@@ -84,6 +105,4 @@ export class WorkingScrollbarComponent implements OnInit {
   private convertPxToInt(value:string) {
     return parseInt(value.substr(0,value.length-2))
   }
-
- 
 }
